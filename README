@@ -1,0 +1,21 @@
+Gcode generated bij LinuxCNC (lineair) will move from X-max to X-min, with for every Y-movement also from maximum to minimum.
+Most of the the movements are not needed to go all the way to maximum or minimum position to burn or engrave.
+This (linux-batch) script will adjust those movements, so that only movemnts will be made that burn / engrave.
+All additional movements will be removed.
+
+Script first detects X1 (X-min), X2 (X-max), Y1 (Y-min), Y2 (Y-max) and Z1 (first Z-movement)
+
+For Y1 the script will rewrite all rules with 'G1 <Y1> <any Z movement>' to 'G1 <any Z-movemnt> ;; removed <Y1>' 
+Next it will search 'G1 <Y1>' and grab following rule to check if it starts with G1, if not
+  it will remark the G1 rule ';;' and place G1 on the followed rule.
+Last Y1 adjustment is to rule out lines with only ' Y1' (to ';; Y1').
+
+The same rules are applied for Y2, so:
+For Y2 the script will rewrite all rules with 'G1 <Y2> <any Z movement>' to 'G1 <any Z-movemnt> ;; removed <Y2>' 
+Next it will search 'G1 <Y2>' and grab following rule to check if it starts with G1, if not
+  it will remark the G1 rule ';;' and place G1 on the followed rule.
+Last Y2 adjustment is to rule out lines with only ' Y2' (to ';; Y2').
+
+Future should also detect movements without any Z-activity and rule them out.
+
+DG.
