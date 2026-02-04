@@ -51,19 +51,20 @@ fi
 # copy and convert original gcode
 if [ -f $1 ]; then
   str=$(echo $1|cut -d"." -f1)					# Filename till first point in filename
-  tr -cd '\11\12\40-\176' < $1 > "/tmp/"$str"_simplified.gcode"
   str1="/tmp/"$str"_simplified.gcode"				# New simplified filename
   str2="/tmp/"$str"_Ytemp.txt"					# Temporarly Y values 1 filename
   str3="/tmp/"$str"_Xtemp.txt"					# Temporarly X values 1 filename
   str21="/tmp/"$str"_Y2temp.txt"				# As above nr 2
   str31="/tmp/"$str"_X2temp.txt"				# As above nr 2
-fi
 # Remove temporarly files if exist
-if [ -f $str1 ]; then rm $str1
-if [ -f $str2 ]; then rm $str2
-if [ -f $str3 ]; then rm $str3
-if [ -f $str21 ]; then rm $str21
-if [ -f $str31 ]; then rm $str31
+  if [ -f $str1 ]; then rm $str1; fi
+  if [ -f $str2 ]; then rm $str2; fi
+  if [ -f $str3 ]; then rm $str3; fi
+  if [ -f $str21 ]; then rm $str21; fi
+  if [ -f $str31 ]; then rm $str31; fi
+# Covert original to /tmp
+  tr -cd '\11\12\40-\176' < $1 > $str1
+fi
 
 # grab nr of lines
 LC=$(wc -l $str1|cut -d" " -f1)
@@ -160,10 +161,8 @@ while IFS='' read -r line; do
 done < $str1 > $str2
 
 # Next find 'G1 ' rules for which the 'G1 ' has to be on the next line before ruling them out.
-
 string13="G1 Y"$Y1 # minimum Y value
 string14="G1 Y"$Y2 # maximum Y value
-
 while IFS='' read -r line; do
   if [ "$line" = "$string13" ]; then
     echo ";; "$line
@@ -180,8 +179,29 @@ done < $str2 > $str3
 
 # TO DO: remove end-lines without Z movement
 
+# Add (new) header to gcode
+cat << EOF > $str2
+;; ==========================
+;;  LinuxCNC simplify script
+;; ==========================
+;; DG feb 2026
+;; Script used to simplify LinuxCNC movements of gcode
+;; generated with the internal 'image to G-code' function.
+;; Scan Pattern = Columns   Scan Direction = Alternating
+;; https://github.com/DGDodo/Gcode-simplifier
+;;
+EOF
+cat $str3 >> $str2
+
 # Copy end file to original location
-cp $str3 $str"_simplified.gcode"
+cp $str2 $str"_simplified.gcode"
+
+# remove used temp files
+#if [ -f $str1 ]; then rm $str1
+#if [ -f $str2 ]; then rm $str2
+#if [ -f $str3 ]; then rm $str3
+#if [ -f $str21 ]; then rm $str21
+#if [ -f $str31 ]; then rm $str31
 
 # END
 # ===
