@@ -197,11 +197,11 @@ cat $str3 >> $str2
 cp $str2 $str"_simplified.gcode"
 
 # remove used temp files
-#if [ -f $str1 ]; then rm $str1
-#if [ -f $str2 ]; then rm $str2
-#if [ -f $str3 ]; then rm $str3
-#if [ -f $str21 ]; then rm $str21
-#if [ -f $str31 ]; then rm $str31
+if [ -f $str1 ]; then rm $str1; fi
+if [ -f $str2 ]; then rm $str2; fi
+if [ -f $str3 ]; then rm $str3; fi
+if [ -f $str21 ]; then rm $str21; fi
+if [ -f $str31 ]; then rm $str31; fi
 
 # END
 # ===
