@@ -177,8 +177,6 @@ while IFS='' read -r line; do
   fi
 done < $str2 > $str3
 
-# TO DO: remove end-lines without Z movement
-
 # Add (new) header to gcode
 cat << EOF > $str2
 ;; ==========================
