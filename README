@@ -1,21 +1,38 @@
-Gcode generated bij LinuxCNC (lineair) will move from X-max to X-min, with for every Y-movement also from maximum to minimum.
-Most of the the movements are not needed to go all the way to maximum or minimum position to burn or engrave.
+Gcode generated bij LinuxCNC (Image to G-code) will move from X-max to X-min, with for every Y-movement also from maximum to minimum.
+A lot of movements are not needed to go all the way to maximum or minimum Y-position to burn or engrave.
 This (linux-batch) script will adjust those movements, so that only movemnts will be made that burn / engrave.
 All additional movements will be removed.
 
-Script first detects X1 (X-min), X2 (X-max), Y1 (Y-min), Y2 (Y-max) and Z1 (first Z-movement)
+LinuxCNC settings:
+Scan pattern:    Columns
+Scan direction:  Alternating
+Tool Type:       Ball End
+Roughing offset: 0.0
 
-For Y1 the script will rewrite all rules with 'G1 <Y1> <any Z movement>' to 'G1 <any Z-movemnt> ;; removed <Y1>' 
+Script detects X1 (X-min), X2 (X-max), Y1 (Y-min) adn Y2 (Y-max).
+
+For Y1 the script will rewrite all rules with 'G1 <Y1> Z0.0000' to 'G1 Z0.0000 ;; removed <Y1>' 
 Next it will search 'G1 <Y1>' and grab following rule to check if it starts with G1, if not
   it will remark the G1 rule ';;' and place G1 on the followed rule.
 Last Y1 adjustment is to rule out lines with only ' Y1' (to ';; Y1').
 
 The same rules are applied for Y2, so:
-For Y2 the script will rewrite all rules with 'G1 <Y2> <any Z movement>' to 'G1 <any Z-movemnt> ;; removed <Y2>' 
+For Y2 the script will rewrite all rules with 'G1 <Y2> Z0.0000' to 'G1 Z0.0000 ;; removed <Y2>' 
 Next it will search 'G1 <Y2>' and grab following rule to check if it starts with G1, if not
   it will remark the G1 rule ';;' and place G1 on the followed rule.
 Last Y2 adjustment is to rule out lines with only ' Y2' (to ';; Y2').
 
-Future should also detect movements without any Z-activity and rule them out.
+It also adds a remark section at the beginning:
+
+;; ==========================
+;;  LinuxCNC simplify script
+;; ==========================
+;; DG feb 2026
+;; Script to simplify LinuxCNC movements of gcode
+;; generated with the internal 'image to G-code' function.
+;; Scan Pattern = Colums   Scan Direction = Alternating
+
+Future should also detect movements without any Z-activity and rule them out?
+For now the script works as designed.
 
 DG.
